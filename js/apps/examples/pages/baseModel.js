@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['common/bone', './examplePage'], function(Base, ExamplePage){
+define(['base', './examplePage'], function(Base, ExamplePage){
 
     var baseUtil = Base.util;
 

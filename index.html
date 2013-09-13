@@ -89,11 +89,77 @@
 <script type="text/javascript" src="js/libs/list-base-widget.js"></script>
 
 <script type="text/javascript">
-    require(['base'],function(Base){
-        var app = Base.app;
+    require.config({
+        appDir: '../',
+        baseUrl: './js',
+        paths: {
+            jquery: "empty:",
+            underscore: "empty:",
+            backbone: "empty:",
+            'text':'libs/requirejs-text-plugin'
+        },
+        dir: '../dist',
+        //optimize: 'none',
+        fileExclusionRegExp: /(build|idea)/,
+        modules: [
 
-        app.defaultApp = 'example';
-        app.appModel = new Base.Model();
+            {
+                name: 'apps/examples',
+                include: [
+                    'apps/examples/app'
+                ],
+                exclude: ['common']
+            }
+
+
+        ]
+    });
+
+    require(['base', 'widgets/header'],function(Base,Header){
+
+        var app = Base.app;
+        app.defaultApp = 'examples';
+        var BaseView = Base.View, BaseModel = Base.Model;
+
+        var PageView = BaseView.extend({
+            postRender:function(){
+                var header = new Header.View({
+                    el:this.$('#header'),
+                    model:this.model
+                });
+                header.render();
+            },
+            changeHandler:function(changes){
+                var attr = this.model.toJSON();
+                if(changes.appId){
+                    require(['apps/'+attr.appId],function(){
+                        require(['apps/'+attr.appId+'/app'], function(app){
+                            app.renderPage(attr.pageId, attr);
+                        })
+                    })
+                }else if(changes.pageId){
+                    require(['apps/'+attr.appId+'/app'], function(app){
+                        app.renderPage(attr.pageId, attr);
+                    })
+                }
+            }
+        });
+
+        var PageModel = BaseModel.extend({
+
+        })
+
+
+        var model =  new PageModel();
+        var view = new PageView({
+            model:model,
+            el:$('body')
+        })
+
+        app.appModel = model;
+
+        view.postRender();
+
         Backbone.history.start({
             root: this.root
         })

@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['common/app','common/bone','text!../templates/pages/examplePage.html'], function(app,Base, template){
+define(['base/app','base','text!../templates/pages/examplePage.html'], function(app,Base, template){
 
     var exampleTemplateFunction = app.compileTemplate('<div id="{{func.name}}"> <h1>{{title}}</h1><p>{{desc}}</p><p style="text-align: right"><a href="#top" class="exampleLink">Top</a> </p><div class="bs-docs-code"><pre></pre></div><div class="preview bs-docs-demo"></div> <div class="output bs-docs-output "><pre></pre></div></div>');
 

@@ -1,6 +1,6 @@
-define(function(require){
+define(['base/app'],function(baseApp){
 
-    var baseApp = require('common/app'),util = require('common/util'), landing = require('./pages/landing'), form = require('./pages/form'), baseView = require('./pages/baseView');
+
 
     var app = _.extend({},baseApp,{
         test:function(){
@@ -13,7 +13,7 @@ define(function(require){
                 pageId = this.defaultPage
             }
 
-            require(['./pages/'+pageId],function(Page){
+            require(['apps/examples/pages/'+pageId],function(Page){
                 var view = new Page.View({
                     model:new Page.Model(params)
                 })

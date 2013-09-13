@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['common/bone', 'text!../templates/pages/landing.html'], function(Base, template){
+define(['base', 'text!../templates/pages/landing.html'], function(Base, template){
 
 
     var PageView = Base.View.extend({

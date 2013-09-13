@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['common/app', 'common/bone', 'common/widgets/form', './examplePage'], function (app, Base, Form, ExamplePage) {
+define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Base, Form, ExamplePage) {
 
 
     var PageView = ExamplePage.View.extend({
@@ -162,7 +162,7 @@ define(['common/app', 'common/bone', 'common/widgets/form', './examplePage'], fu
         //Custom Element Code start
         var tagTemplate = app.compileTemplate("<li><span>{{tag}}</span> <a href='#remove' class='remove'>remove</a></li>");
         var TagElement = Form.ElementView.extend({
-            template:'common/templates/widgets/form/tagView.html',
+            template:'apps/examples/templates/tagView.html',
             events:{
                 'keypress input':'keyPressHandler',
                 'click .remove':'removeHandler'
