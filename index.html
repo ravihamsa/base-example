@@ -63,15 +63,15 @@
 
 
 <div class="row-fluid">
-    <div class="span12" id="header">
+    <div class="col-md-12" id="header">
 
     </div>
 </div>
 <div class="row-fluid">
-    <div class="span2 left-nav">
+    <div class="col-md-2 left-nav">
         <!--Sidebar content-->
     </div>
-    <div class="span10">
+    <div class="col-md-10">
         <div id="app-body">
 
         </div>
@@ -91,75 +91,19 @@
 <script type="text/javascript">
     require.config({
         appDir: '../',
-        baseUrl: './js',
-        paths: {
-            jquery: "empty:",
-            underscore: "empty:",
-            backbone: "empty:",
-            'text':'libs/requirejs-text-plugin'
-        },
-        dir: '../dist',
-        //optimize: 'none',
-        fileExclusionRegExp: /(build|idea)/,
-        modules: [
-
-            {
-                name: 'apps/examples',
-                include: [
-                    'apps/examples/app'
-                ],
-                exclude: ['common']
-            }
-
-
-        ]
+        baseUrl: './js'
     });
 
     require(['base', 'widgets/header'],function(Base,Header){
-
         var app = Base.app;
         app.defaultApp = 'examples';
-        var BaseView = Base.View, BaseModel = Base.Model;
+        var RootView = Base.Root.View;
 
-        var PageView = BaseView.extend({
-            postRender:function(){
-                var header = new Header.View({
-                    el:this.$('#header'),
-                    model:this.model
-                });
-                header.render();
-            },
-            changeHandler:function(changes){
-                var attr = this.model.toJSON();
-                if(changes.appId){
-                    require(['apps/'+attr.appId],function(){
-                        require(['apps/'+attr.appId+'/app'], function(app){
-                            app.renderPage(attr.pageId, attr);
-                        })
-                    })
-                }else if(changes.pageId){
-                    require(['apps/'+attr.appId+'/app'], function(app){
-                        app.renderPage(attr.pageId, attr);
-                    })
-                }
-            }
-        });
-
-        var PageModel = BaseModel.extend({
-
-        })
-
-
-        var model =  new PageModel();
-        var view = new PageView({
-            model:model,
+        var view = new RootView({
+            model:app.appModel,
             el:$('body')
         })
-
-        app.appModel = model;
-
         view.postRender();
-
         Backbone.history.start({
             root: this.root
         })

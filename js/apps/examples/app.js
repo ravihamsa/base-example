@@ -1,6 +1,4 @@
-define(['base/app'],function(baseApp){
-
-
+define(['base/app', 'apps/examples/pages/landing', 'apps/examples/pages/baseView', 'apps/examples/pages/form', 'apps/examples/pages/list'],function(baseApp){
 
     var app = _.extend({},baseApp,{
         test:function(){
