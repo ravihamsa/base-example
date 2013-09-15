@@ -26,11 +26,12 @@ define(['base/app','base','text!../templates/pages/examplePage.html'], function(
             _.each(examples, function (example) {
                 var func = example.func;
 
+                var commentRegex = /^\/\//;
 
                 var functionString = func.toString();
                 var exampleName = func.name;
-                var startIndex = functionString.indexOf('//') - 8;
-                var lastIndex = functionString.lastIndexOf('//')
+                var startIndex = functionString.indexOf(commentRegex) - 8;
+                var lastIndex = functionString.lastIndexOf(commentRegex);
                 listEl.append('<li><a class="exampleLink" href="#'+exampleName+'">'+example.title+' </a> </li>');
                 codeEl.append(exampleTemplateFunction(example));
                 var preEl = _this.$('#' + exampleName + ' .bs-docs-code pre');
@@ -43,7 +44,8 @@ define(['base/app','base','text!../templates/pages/examplePage.html'], function(
                 outputEl.addClass('lang-js');
 
                 //preEl.addClass('linenums');
-                preEl.html(Handlebars.Utils.escapeExpression(functionString.substr(startIndex, lastIndex - startIndex)));
+                //preEl.html(Handlebars.Utils.escapeExpression(functionString.substr(startIndex, lastIndex - startIndex)));
+                preEl.html(Handlebars.Utils.escapeExpression(functionString.match(/\/\/[\s\S]+\/\/\s/)));
                 func.call(_this, previewEl, outputEl);
             })
         },

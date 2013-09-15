@@ -8,6 +8,7 @@
 
 define(['base', './examplePage'], function(Base, ExamplePage){
 
+    var app = Base.app;
 
 
     var PageView = ExamplePage.View.extend({
@@ -55,21 +56,32 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     function metaRequests(previewEl, consoleEl){
         //
 
+        var randomUserTemplate = '<div><h1>{{name.title}} {{name.first}} {{name.last}}</h1><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>';
+        var randomUserParser = function(data){
+            return data.results[0].user;
+        };
+
         var view = new Base.View({
-            template:'<div style="background-color: red; padding: 20px; border: 1px solid #ccc;">Test View for Meta Requests</div>',
+            template:randomUserTemplate,
             requests:[{
                 id:'request1',
+                url:'http://api.randomuser.me/',
                 params:{
                     index:0,
                     value:'value1'
-                }
+                },
+                parser:randomUserParser
             },{
                 id:'request2',
+                url:'http://api.randomuser.me/',
                 params:{
                     index:1,
                     value:'value2'
-                }
-            }]
+                },
+                parser:randomUserParser
+            }],
+            model:new Base.Model(),
+            renderOnChange:true
         });
 
 
@@ -87,8 +99,9 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         $('<button class="btn">Add Five More Requests</button>').on('click', function(){
             for(var i=0; i<5;i++){
-                view.getRequestQue().push({id:'something',params:{index:i, value:Math.random()*30000}}, function(err,out){
-                    consoleEl.html(ExamplePage.syntaxHighlight(out));
+                view.addRequest({id:'something',params:{index:i, value:Math.random()*30000}, url:'http://api.randomuser.me/', parser:randomUserParser}, function(out){
+                    view.model.set(out);
+                    view.setTemplate(randomUserTemplate);
                 });
             }
 
@@ -179,6 +192,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         })
         view.render();
         view.printOutJSON();
+
         //
 
         previewEl.html(view.el);
