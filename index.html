@@ -53,6 +53,31 @@
         .active {
             background-color: aquamarine;
         }
+
+        .custom-form fieldset{
+            margin-bottom: 20px;
+            border: 1px solid #c0c0c0;
+        }
+
+        .custom-form fieldset .element-list {
+            padding:10px;
+        }
+        .custom-form fieldset .element-container {
+            max-height: 0;
+            transition: max-height 0.25s  ease-out;
+            overflow: hidden;
+        }
+
+
+        .custom-form fieldset.open .element-container{
+            max-height: 500px;
+        }
+
+        .custom-form fieldset h3 {
+            background-color: #ccc;
+            margin: 0;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>

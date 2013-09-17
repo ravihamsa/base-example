@@ -12,6 +12,9 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
     var PageView = ExamplePage.View.extend({
         examples:[
             {
+                func: customForm,
+                title: 'Custom Form'
+            },            {
                 func: simpleForm,
                 title: 'Simple Form'
             },
@@ -31,6 +34,91 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         ]
 
     })
+
+
+    function customForm(previewEl, consoleEl) {
+        //simple form
+
+        var titleIndex = {
+            elements:'Default Group',
+            group1:'Group Title 1',
+            group2:'Group Title 2'
+        }
+
+        var groupPrefix = 'grp-';
+
+        var groupTemplate = app.compileTemplate('<fieldset class="cont-{{groupClass}}"><h3 class="group-title">{{groupTitle}}</h3><div class="element-container"> <div class="element-list {{groupClass}}"></div></div> </fieldset> ');
+
+        var oldPostRender = Form.View.prototype.postRender;
+
+
+        var CustomForm = Form.View.extend({
+            events: {
+                'submit form': 'formSubmitHandler',
+                'click fieldset h3':'toggleGroup'
+            },
+            className:'custom-form',
+            renderGroupContainers:function(){
+                var model = this.model;
+                var elements = model.get('elements');
+                var groupList = _.unique(elements.pluck('group'));
+                _.each(groupList, function(groupName) {
+                    if (this.$('.' + groupPrefix + groupName).length === 0) {
+                        this.formEl.append(groupTemplate({groupTitle:titleIndex[groupName], groupClass:groupPrefix + groupName}));
+                    }
+                }, this);
+            },
+            postRender:function(){
+                oldPostRender.call(this);
+                var defaultGroup = this.model.get('defaultGroup');
+                var containerClass = '.cont-'+groupPrefix + defaultGroup;
+                this.$(containerClass).addClass('open');
+            },
+            toggleGroup:function(e){
+                this.$('fieldset').removeClass('open')
+                var target = $(e.target).closest('fieldset');
+                target.addClass('open');
+            }
+        })
+
+
+        var coll = new Form.ElementCollection([
+            {name: 'userName'},
+            {name: 'password', type: 'password'},
+            {name: 'gender', type: 'select', value: 1, group:'group1', options: [
+                {id: 1, name: 'Male'},
+                {id: 2, name: 'Female'}
+            ]},
+            {name: 'resident', type: 'radioList', value: 1,group:'group1', options: [
+                {id: 1, name: 'Yes'},
+                {id: 2, name: 'No'}
+            ]},
+            {name: 'interests', type: 'checkList', value: [1], group:'group2',options: [
+                {id: 1, name: 'Reading'},
+                {id: 2, name: 'Movies'}
+            ]},
+            {name: 'submit', type: 'submit', value: 'Submit', group:'group2'}
+        ])
+
+        var formModel = new Form.Model({
+            elements: coll,
+            defaultGroup:'group1'
+        });
+
+        var form = new CustomForm({
+            model: formModel
+        })
+
+        form.render();
+
+        //ends here
+
+        previewEl.html(form.el);
+
+        form.on('formSubmit', function(formData){
+            consoleEl.html(ExamplePage.syntaxHighlight(formData));
+        })
+    }
 
 
     function simpleForm(previewEl, consoleEl) {
