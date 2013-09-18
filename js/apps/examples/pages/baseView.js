@@ -54,9 +54,9 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
 
     function metaRequests(previewEl, consoleEl){
-        //
+        //starts here
 
-        var randomUserTemplate = '<div><h1>{{name.title}} {{name.first}} {{name.last}}</h1><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>';
+        var randomUserTemplate = '{{#each users}}<div><h1>{{this.name.title}} {{name.first}} {{name.last}}</h1> <div style="text-align:right"><a href="#{{md5_hash}}" class="action">remove</a></div><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>{{/each}}';
         var randomUserParser = function(data){
             if(data.readyState === 0){
                 //error case
@@ -67,7 +67,35 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         };
 
-        var view = new Base.View({
+        var UserModel = Base.Model.extend({
+            idAttribute:'md5_hash'
+        })
+
+        var UserCollection = Base.Collection.extend({
+            model:UserModel
+        })
+
+        var usersCollection = new UserCollection()
+
+
+        var model = new Base.Model({
+            users: usersCollection
+        });
+
+
+        var randomUserSuccessHandler = function(user){
+            usersCollection.add(user);
+        }
+
+        usersCollection.on('remove',function(){
+            model.trigger('change', model);
+        })
+        usersCollection.on('add',function(){
+            model.trigger('change', model);
+        })
+
+
+        var UserListView = Base.View.extend({
             template:randomUserTemplate,
             requests:[{
                 id:'request1',
@@ -76,7 +104,8 @@ define(['base', './examplePage'], function(Base, ExamplePage){
                     index:0,
                     value:'value1'
                 },
-                parser:randomUserParser
+                parser:randomUserParser,
+                callback:randomUserSuccessHandler
             },{
                 id:'request2',
                 url:'http://api.randomuser.me/',
@@ -84,17 +113,30 @@ define(['base', './examplePage'], function(Base, ExamplePage){
                     index:1,
                     value:'value2'
                 },
-                parser:randomUserParser
+                parser:randomUserParser,
+                callback:randomUserSuccessHandler
             }],
-            model:new Base.Model(),
-            renderOnChange:true
+            renderEvents:['change'],
+            actionHandler:function(userHash){
+                var userCollection = this.model.get('users');
+                userCollection.get(userHash).removeSelf();
+            },
+            useDeepJSON:true,
+            requestsParser:function(){
+                console.log(this.$el, arguments);
+            }
+        })
+
+
+        var view = new UserListView({
+            model:model
         });
 
 
         view.render();
 
 
-        //
+        //ends here
 
         previewEl.html(view.el);
 
@@ -102,12 +144,9 @@ define(['base', './examplePage'], function(Base, ExamplePage){
             consoleEl.html(ExamplePage.syntaxHighlight(data))
         })
 
-        $('<button class="btn">Add Five More Requests</button>').on('click', function(){
-            for(var i=0; i<5;i++){
-                view.addRequest({id:'something'+i,params:{index:i, value:Math.random()*30000}, url:'http://api.randomuser.me/', parser:randomUserParser}, function(out){
-                    view.model.set(out);
-                    view.setTemplate(randomUserTemplate);
-                });
+        $('<button class="btn">Add Two More Requests</button>').on('click', function(){
+            for(var i=0; i<2;i++){
+                view.addRequest({id:'something'+i,params:{index:i, value:Math.random()*30000}, url:'http://api.randomuser.me/', parser:randomUserParser}, randomUserSuccessHandler);
             }
 
         }).appendTo(previewEl);
@@ -117,7 +156,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
 
     function inlineTemplate(previewEl){
-        //
+        //starts here
         var View = Base.View.extend({
             template:'this is inline template'
         });
@@ -125,14 +164,14 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         var view = new View();
         view.render();
 
-        //
+        //ends here
 
         previewEl.html(view.el);
     }
 
 
     function underscoreTemplate(previewEl){
-        //
+        //starts here
         var View = Base.View.extend({
             template: _.template('this is underscore template')
         });
@@ -140,13 +179,13 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         var view = new View();
         view.render();
 
-        //
+        //ends here
 
         previewEl.html(view.el);
     }
 
     function urlTemplate(previewEl){
-        //
+        //starts here
         var View = Base.View.extend({
             template: 'apps/examples/templates/urlTemplate.html'
         });
@@ -154,13 +193,13 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         var view = new View();
         view.render();
 
-        //
+        //ends here
 
         previewEl.html(view.el);
     }
 
     function autoWiredChangeListeners(previewEl, consoleEl){
-        //
+        //starts here
 
 
         var MyView = Base.View.extend({
@@ -198,7 +237,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         view.render();
         view.printOutJSON();
 
-        //
+        //ends here
 
         previewEl.html(view.el);
 
@@ -206,7 +245,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
 
     function dataEvents(previewEl, consoleEl){
-        //
+        //starts here
 
 
         var MyView = Base.View.extend({
@@ -240,7 +279,8 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         })
         view.render();
         view.printOutJSON();
-        //
+
+        //ends here
 
         previewEl.html(view.el);
 
@@ -248,7 +288,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
 
     function baseViewWithSubViews(previewEl, consoleEl){
-        //
+        //starts here
 
         var model = new Base.Model({
             attribute1:'value1',
@@ -263,21 +303,21 @@ define(['base', './examplePage'], function(Base, ExamplePage){
                     model:model,
                     template:'this is subview 1 {{stringify this}}',
                     parentEl:'.subview-container',
-                    renderOnChange:true
+                    renderEvents:['change']
                 },
                 subView2:{
                     View:Base.View,
                     model:model,
                     template:'this is subview 2  {{stringify this}}',
                     parentEl:'.subview-container',
-                    renderOnChange:true
+                    renderEvents:['change']
                 },
                 subView3:{
                     View:Base.View,
                     model:model,
                     template:'this is subview 3 {{stringify this}}',
                     parentEl:'.subview-container',
-                    renderOnChange:true
+                    renderEvents:['change']
                 }
             }
         })
@@ -286,7 +326,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         view.getSubView('subView2').setTemplate('this is new updated template for subview 2');
 
-        //
+        //ends here
 
         previewEl.html(view.el);
 
@@ -303,7 +343,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
 
     function setTemplate (previewEl, consoleEl){
-        //
+        //starts here
         var clock = new Base.View({
             template:'Current Time is: '+new Date().toTimeString()
         })
@@ -324,7 +364,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         clock.render();
 
 
-        //
+        //ends here
 
         previewEl.html(clock.el);
 
@@ -342,7 +382,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
 
     function statedView (previewEl, consoleEl){
-        //
+        //starts here
 
         var RedView = Base.View.extend({
             template:'<div style="background-color: red">this is red view</div> '
@@ -354,8 +394,8 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         var statedView = new Base.View({
             template:'<div class="state-view"></div>',
-            states:{  // if you skip this view will not have setState functionality
-                'red':RedView,  //first view would be picked unless you specify state option
+            states:{
+                'red':RedView,
                 'green':GreenView
             }
         })
@@ -364,7 +404,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         statedView.render();
 
 
-        //
+        //ends here
 
         previewEl.html(statedView.el);
 
