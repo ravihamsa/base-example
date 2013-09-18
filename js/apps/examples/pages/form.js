@@ -10,11 +10,8 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
 
 
     var PageView = ExamplePage.View.extend({
-        examples:[
-            {
-                func: customForm,
-                title: 'Custom Form'
-            },            {
+        examples: [
+           {
                 func: simpleForm,
                 title: 'Simple Form'
             },
@@ -30,6 +27,10 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
             {
                 func: formWithCustomElement,
                 title: 'Form with Custom Element'
+            },
+            {
+                func: customForm,
+                title: 'Custom Form'
             }
         ]
 
@@ -37,12 +38,12 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
 
 
     function customForm(previewEl, consoleEl) {
-        //simple form
+        //custom form
 
         var titleIndex = {
-            elements:'Default Group',
-            group1:'Group Title 1',
-            group2:'Group Title 2'
+            elements: 'Default Group',
+            group1: 'Group Title 1',
+            group2: 'Group Title 2'
         }
 
         var groupPrefix = 'grp-';
@@ -55,26 +56,27 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         var CustomForm = Form.View.extend({
             events: {
                 'submit form': 'formSubmitHandler',
-                'click fieldset h3':'toggleGroup'
+                'click fieldset h3': 'toggleGroup'
             },
-            className:'custom-form',
-            renderGroupContainers:function(){
+            className: 'custom-form',
+            renderGroupContainers: function () {
                 var model = this.model;
                 var elements = model.get('elements');
                 var groupList = _.unique(elements.pluck('group'));
-                _.each(groupList, function(groupName) {
+                var groupEl = this.$('.group-list');
+                _.each(groupList, function (groupName) {
                     if (this.$('.' + groupPrefix + groupName).length === 0) {
-                        this.formEl.append(groupTemplate({groupTitle:titleIndex[groupName], groupClass:groupPrefix + groupName}));
+                        groupEl.append(groupTemplate({groupTitle: titleIndex[groupName], groupClass: groupPrefix + groupName}));
                     }
                 }, this);
             },
-            postRender:function(){
+            postRender: function () {
                 oldPostRender.call(this);
                 var defaultGroup = this.model.get('defaultGroup');
-                var containerClass = '.cont-'+groupPrefix + defaultGroup;
+                var containerClass = '.cont-' + groupPrefix + defaultGroup;
                 this.$(containerClass).addClass('open');
             },
-            toggleGroup:function(e){
+            toggleGroup: function (e) {
                 this.$('fieldset').removeClass('open')
                 var target = $(e.target).closest('fieldset');
                 target.addClass('open');
@@ -85,24 +87,32 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         var coll = new Form.ElementCollection([
             {name: 'userName'},
             {name: 'password', type: 'password'},
-            {name: 'gender', type: 'select', value: 1, group:'group1', options: [
+            {name: 'gender', type: 'select', value: 1, group: 'group1', options: [
                 {id: 1, name: 'Male'},
                 {id: 2, name: 'Female'}
             ]},
-            {name: 'resident', type: 'radioList', value: 1,group:'group1', options: [
+            {name: 'resident', type: 'radioList', value: 1, group: 'group1', options: [
                 {id: 1, name: 'Yes'},
                 {id: 2, name: 'No'}
             ]},
-            {name: 'interests', type: 'checkList', value: [1], group:'group2',options: [
+            {name: 'maleInterests', type: 'checkList', group: 'group2', value: [1], options: [
                 {id: 1, name: 'Reading'},
                 {id: 2, name: 'Movies'}
+            ], activeRules: [
+                {expr: 'eq', element: 'gender', value: '1'}
             ]},
-            {name: 'submit', type: 'submit', value: 'Submit', group:'group2'}
+            {name: 'femaleInterests', type: 'checkList', group: 'group2', value: [4], options: [
+                {id: 3, name: 'Fashion'},
+                {id: 4, name: 'Colours'}
+            ], activeRules: [
+                {expr: 'eq', element: 'gender', value: '2'}
+            ]},
+            {name: 'submit', type: 'submit', value: 'Submit', group: 'buttons'}
         ])
 
         var formModel = new Form.Model({
             elements: coll,
-            defaultGroup:'group1'
+            defaultGroup: 'group1'
         });
 
         var form = new CustomForm({
@@ -115,7 +125,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
 
         previewEl.html(form.el);
 
-        form.on('formSubmit', function(formData){
+        form.on('formSubmit', function (formData) {
             consoleEl.html(ExamplePage.syntaxHighlight(formData));
         })
     }
@@ -155,7 +165,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
 
         previewEl.html(form.el);
 
-        form.on('formSubmit', function(formData){
+        form.on('formSubmit', function (formData) {
             consoleEl.html(ExamplePage.syntaxHighlight(formData));
         })
     }
@@ -202,7 +212,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         //end here
         previewEl.html(form.el);
 
-        form.on('formSubmit', function(formData){
+        form.on('formSubmit', function (formData) {
             consoleEl.html(ExamplePage.syntaxHighlight(formData));
         })
     }
@@ -237,7 +247,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         //ends here
         previewEl.html(form.el);
 
-        form.on('formSubmit', function(formData){
+        form.on('formSubmit', function (formData) {
             consoleEl.html(ExamplePage.syntaxHighlight(formData));
         })
     }
@@ -250,21 +260,21 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         //Custom Element Code start
         var tagTemplate = app.compileTemplate("<li><span>{{tag}}</span> <a href='#remove' class='remove'>remove</a></li>");
         var TagElement = Form.ElementView.extend({
-            template:'apps/examples/templates/tagView.html',
-            events:{
-                'keypress input':'keyPressHandler',
-                'click .remove':'removeHandler'
+            template: 'apps/examples/templates/tagView.html',
+            events: {
+                'keypress input': 'keyPressHandler',
+                'click .remove': 'removeHandler'
             },
-            keyPressHandler:function(e){
+            keyPressHandler: function (e) {
 
                 var keyCode = e.keyCode;
                 var model = this.model;
-                if(keyCode === 13){
+                if (keyCode === 13) {
                     e.preventDefault();
                     var tag = this.$('input').val();
                     var value = model.get('value') || '';
                     var valueArr = value.split(',');
-                    if(valueArr.indexOf(tag)=== -1){
+                    if (valueArr.indexOf(tag) === -1) {
                         this.addTag(tag);
                         this.$('input').val('');
                         this.updateValue();
@@ -272,34 +282,34 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
                 }
 
             },
-            removeHandler:function(e){
+            removeHandler: function (e) {
                 e.preventDefault();
                 var anchor = $(e.target);
                 var li = anchor.closest('li');
                 li.remove();
                 this.updateValue();
             },
-            addTag:function(tag){
+            addTag: function (tag) {
                 var tagList = this.$('.tag-list');
-                if(!_.isEmpty(tag)){
-                    tagList.append(tagTemplate({tag:tag}));
+                if (!_.isEmpty(tag)) {
+                    tagList.append(tagTemplate({tag: tag}));
                 }
             },
-            valueFunction:function(){
+            valueFunction: function () {
                 var spans = this.$('.tag-list li span');
-                var tagList = _.map(spans, function(span){
+                var tagList = _.map(spans, function (span) {
                     return $(span).text()
                 })
                 return _.uniq(tagList).join(',');
             },
-            valueChangeHandler:function(value){
+            valueChangeHandler: function (value) {
                 var _this = this;
                 value = value || '';
                 var valueArr = _.uniq(_.reject(_.map(value.split(','), $.trim), _.isEmpty));
 
                 var tagList = this.$('.tag-list');
                 tagList.empty();
-                _.each(valueArr,function(tag){
+                _.each(valueArr, function (tag) {
                     _this.addTag(tag);
                 })
             }
@@ -308,11 +318,11 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         //Custom Element Code end
 
         var coll = new Form.ElementCollection([
-            {name: 'details', type:'textarea', validationRules: [
+            {name: 'details', type: 'textarea', validationRules: [
                 { expr: 'req'}
             ]},
-            {name: 'tags',type:'tagList', value:'default', validationRules: [
-                { expr: 'function', message:'Minimum Two Tags Required', func:function(value){
+            {name: 'tags', type: 'tagList', value: 'default', validationRules: [
+                { expr: 'function', message: 'Minimum Two Tags Required', func: function (value) {
                     value = value || '';
                     var valueArr = value.split(',');
                     return valueArr.length > 1;
@@ -337,7 +347,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         //ends here
         previewEl.html(form.el);
 
-        form.on('formSubmit', function(formData){
+        form.on('formSubmit', function (formData) {
             consoleEl.html(ExamplePage.syntaxHighlight(formData));
         })
     }

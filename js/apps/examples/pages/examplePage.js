@@ -45,7 +45,7 @@ define(['base/app','base','text!../templates/pages/examplePage.html'], function(
 
                 //preEl.addClass('linenums');
                 //preEl.html(Handlebars.Utils.escapeExpression(functionString.substr(startIndex, lastIndex - startIndex)));
-                preEl.html(Handlebars.Utils.escapeExpression(functionString.match(/\/\/[\s\S]+\/\/\s/)));
+                preEl.html(Handlebars.Utils.escapeExpression(functionString.match(/(?=\/\/.+)[\s\S]+(?=\/\/[/s|e])/m)));
                 func.call(_this, previewEl, outputEl);
             })
         },
