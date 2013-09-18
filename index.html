@@ -107,12 +107,18 @@
 <script type="text/javascript" src="js/libs/md5-min.js"></script>
 <script type="text/javascript" src="js/libs/handlebars.js"></script>
 <script type="text/javascript" src="js/libs/require-min.js"></script>
-<script type="text/javascript" src="http://ravihamsa.inmobi.com/baseapp/js/base-list-widgets.js"></script>
+
 
 <script type="text/javascript">
     require.config({
         appDir: '../',
-        baseUrl: './js'
+        baseUrl: './js',
+        paths:{
+            'base':'http://ravihamsa.inmobi.com/baseapp/js/base',
+            'list':'http://ravihamsa.inmobi.com/baseapp/js/list',
+            'widgets':'http://ravihamsa.inmobi.com/baseapp/js/widgets',
+            text:'http://ravihamsa.inmobi.com/baseapp/js/plugins/requirejs-text-plugin'
+        }
     });
 
     require(['base'],function(Base){
