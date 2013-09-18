@@ -58,7 +58,13 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         var randomUserTemplate = '<div><h1>{{name.title}} {{name.first}} {{name.last}}</h1><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>';
         var randomUserParser = function(data){
-            return data.results[0].user;
+            if(data.readyState === 0){
+                //error case
+                return {};
+            }else{
+                return data.results[0].user;
+            }
+
         };
 
         var view = new Base.View({
@@ -85,7 +91,6 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         });
 
 
-
         view.render();
 
 
@@ -99,7 +104,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         $('<button class="btn">Add Five More Requests</button>').on('click', function(){
             for(var i=0; i<5;i++){
-                view.addRequest({id:'something',params:{index:i, value:Math.random()*30000}, url:'http://api.randomuser.me/', parser:randomUserParser}, function(out){
+                view.addRequest({id:'something'+i,params:{index:i, value:Math.random()*30000}, url:'http://api.randomuser.me/', parser:randomUserParser}, function(out){
                     view.model.set(out);
                     view.setTemplate(randomUserTemplate);
                 });
