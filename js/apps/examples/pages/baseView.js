@@ -87,13 +87,9 @@ define(['base', './examplePage'], function(Base, ExamplePage){
             usersCollection.add(user);
         }
 
-        usersCollection.on('remove',function(){
+        usersCollection.on('add remove',function(){
             model.trigger('change', model);
         })
-        usersCollection.on('add',function(){
-            model.trigger('change', model);
-        })
-
 
         var UserListView = Base.View.extend({
             template:randomUserTemplate,
@@ -104,8 +100,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
                     index:0,
                     value:'value1'
                 },
-                parser:randomUserParser,
-                callback:randomUserSuccessHandler
+                parser:randomUserParser
             },{
                 id:'request2',
                 url:'http://api.randomuser.me/',
@@ -113,8 +108,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
                     index:1,
                     value:'value2'
                 },
-                parser:randomUserParser,
-                callback:randomUserSuccessHandler
+                parser:randomUserParser
             }],
             renderEvents:['change'],
             actionHandler:function(userHash){
@@ -123,7 +117,9 @@ define(['base', './examplePage'], function(Base, ExamplePage){
             },
             useDeepJSON:true,
             requestsParser:function(){
-                console.log(this.$el, arguments);
+                var args = Array.prototype.slice.call(arguments);
+                console.log(args);
+                usersCollection.add(args);
             }
         })
 
