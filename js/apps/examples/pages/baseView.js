@@ -59,32 +59,25 @@ define(['base', 'base/dataLoader','./examplePage'], function (Base, dataLoader, 
         //starts here
 
         var randomUserTemplate = '{{#each users}}{{#if errors}} {{#each errors}} <div><h1>{{message}}</h1></div>{{/each}}{{else}}<div><h1>{{name.title}} {{name.first}} {{name.last}}</h1> <div style="text-align:right"><a href="#{{md5_hash}}" class="action">remove</a></div><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>{{/if}}{{/each}}';
+
+        var randomUserParser = function(data){
+            if(data.errors){
+                return data;
+            }else{
+                return data.results[0].user;
+            }
+        }
+
         dataLoader.define('randomUser', {
             type: 'GET',
             url: 'http://api.randomuser.me/',
-            parser: function (data) {
-                if (data.readyState === 0) {
-                    //error case
-                    return {};
-                } else {
-                    return data.results[0].user;
-                }
-
-            }
+            parser: randomUserParser
         })
 
         dataLoader.define('wrongUser', {
             type: 'GET',
             url: 'http://api.wrongmuser.me/',
-            parser: function (data) {
-                if (data.readyState === 0) {
-                    //error case
-                    return {};
-                } else {
-                    return data.results[0].user;
-                }
-
-            }
+            parser: randomUserParser
         })
 
         var UserModel = Base.Model.extend({
