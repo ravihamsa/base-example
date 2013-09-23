@@ -6,73 +6,93 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base', './examplePage'], function(Base, ExamplePage){
+define(['base', 'base/dataLoader','./examplePage'], function (Base, dataLoader, ExamplePage) {
 
     var app = Base.app;
 
 
     var PageView = ExamplePage.View.extend({
-        examples:[
+        examples: [
             {
-                func:inlineTemplate,
-                title:'Inline Template'
-            },{
-                func:underscoreTemplate,
-                title:'Underscore Template'
-            },{
-                func:urlTemplate,
-                title:'URL Template'
+                func: inlineTemplate,
+                title: 'Inline Template'
             },
             {
-              func:setTemplate,
-              title:'Dynamic Templates'
+                func: underscoreTemplate,
+                title: 'Underscore Template'
             },
             {
-              func:statedView,
-              title:'Stated Views'
+                func: urlTemplate,
+                title: 'URL Template'
             },
             {
-                func:autoWiredChangeListeners,
-                title:'Auto wired model change listeners',
-                desc:'Methods of view defined in pattern [attributeName]ChangeHandler will get called every time attribute is changed. No need of add listeners for the same'
+                func: setTemplate,
+                title: 'Dynamic Templates'
             },
             {
-                func:dataEvents,
-                title:'DataEvents',
-                desc:'Use events like hash to listen for events for model / collection defined in view'
+                func: statedView,
+                title: 'Stated Views'
             },
             {
-                func:baseViewWithSubViews,
-                title:'Base View with Sub Views'
+                func: autoWiredChangeListeners,
+                title: 'Auto wired model change listeners',
+                desc: 'Methods of view defined in pattern [attributeName]ChangeHandler will get called every time attribute is changed. No need of add listeners for the same'
             },
             {
-                func:metaRequests,
-                title:'Data Requests using config'
+                func: dataEvents,
+                title: 'DataEvents',
+                desc: 'Use events like hash to listen for events for model / collection defined in view'
+            },
+            {
+                func: baseViewWithSubViews,
+                title: 'Base View with Sub Views'
+            },
+            {
+                func: metaRequests,
+                title: 'Data Requests using config'
             }
         ]
     })
 
 
-    function metaRequests(previewEl, consoleEl){
+    function metaRequests(previewEl, consoleEl) {
         //starts here
 
-        var randomUserTemplate = '{{#each users}}<div><h1>{{this.name.title}} {{name.first}} {{name.last}}</h1> <div style="text-align:right"><a href="#{{md5_hash}}" class="action">remove</a></div><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>{{/each}}';
-        var randomUserParser = function(data){
-            if(data.readyState === 0){
-                //error case
-                return {};
-            }else{
-                return data.results[0].user;
-            }
+        var randomUserTemplate = '{{#each users}}{{#if errors}} {{#each errors}} <div><h1>{{message}}</h1></div>{{/each}}{{else}}<div><h1>{{name.title}} {{name.first}} {{name.last}}</h1> <div style="text-align:right"><a href="#{{md5_hash}}" class="action">remove</a></div><img src="{{picture}}" height="50" width="50"/><p>{{email}}</p></div>{{/if}}{{/each}}';
+        dataLoader.define('randomUser', {
+            type: 'GET',
+            url: 'http://api.randomuser.me/',
+            parser: function (data) {
+                if (data.readyState === 0) {
+                    //error case
+                    return {};
+                } else {
+                    return data.results[0].user;
+                }
 
-        };
+            }
+        })
+
+        dataLoader.define('wrongUser', {
+            type: 'GET',
+            url: 'http://api.wrongmuser.me/',
+            parser: function (data) {
+                if (data.readyState === 0) {
+                    //error case
+                    return {};
+                } else {
+                    return data.results[0].user;
+                }
+
+            }
+        })
 
         var UserModel = Base.Model.extend({
-            idAttribute:'md5_hash'
+            idAttribute: 'md5_hash'
         })
 
         var UserCollection = Base.Collection.extend({
-            model:UserModel
+            model: UserModel
         })
 
         var usersCollection = new UserCollection()
@@ -83,49 +103,47 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         });
 
 
-        var randomUserSuccessHandler = function(user){
+        var randomUserSuccessHandler = function (user) {
             usersCollection.add(user);
         }
 
-        usersCollection.on('add remove',function(){
+        usersCollection.on('add remove', function () {
             model.trigger('change', model);
         })
 
         var UserListView = Base.View.extend({
-            template:randomUserTemplate,
-            requests:[{
-                id:'request1',
-                url:'http://api.randomuser.me/',
-                params:{
-                    index:0,
-                    value:'value1'
+            template: randomUserTemplate,
+            requests: [
+                {
+                    id: 'randomUser',
+                    params: {
+                        index: 0,
+                        value: 'value1'
+                    }
                 },
-                parser:randomUserParser
-            },{
-                id:'request2',
-                url:'http://api.randomuser.me/',
-                params:{
-                    index:1,
-                    value:'value2'
-                },
-                parser:randomUserParser
-            }],
-            renderEvents:['change'],
-            actionHandler:function(userHash){
+                {
+                    id: 'wrongUser',
+                    params: {
+                        index: 1,
+                        value: 'value2'
+                    }
+                }
+            ],
+            renderEvents: ['change'],
+            actionHandler: function (userHash) {
                 var userCollection = this.model.get('users');
                 userCollection.get(userHash).removeSelf();
             },
-            useDeepJSON:true,
-            requestsParser:function(){
+            useDeepJSON: true,
+            requestsParser: function () {
                 var args = Array.prototype.slice.call(arguments);
-                console.log(args);
                 usersCollection.add(args);
             }
         })
 
 
         var view = new UserListView({
-            model:model
+            model: model
         });
 
 
@@ -136,13 +154,13 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         previewEl.html(view.el);
 
-        view.on('requestComplete',function(data){
+        view.on('requestComplete', function (data) {
             consoleEl.html(ExamplePage.syntaxHighlight(data))
         })
 
-        $('<button class="btn">Add Two More Requests</button>').on('click', function(){
-            for(var i=0; i<2;i++){
-                view.addRequest({id:'something'+i,params:{index:i, value:Math.random()*30000}, url:'http://api.randomuser.me/', parser:randomUserParser}, randomUserSuccessHandler);
+        $('<button class="btn">Add Two More Requests</button>').on('click',function () {
+            for (var i = 0; i < 2; i++) {
+                view.addRequest({id: 'randomUser', params: {index: i, value: Math.random() * 30000}}, randomUserSuccessHandler);
             }
 
         }).appendTo(previewEl);
@@ -151,10 +169,10 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     }
 
 
-    function inlineTemplate(previewEl){
+    function inlineTemplate(previewEl) {
         //starts here
         var View = Base.View.extend({
-            template:'this is inline template'
+            template: 'this is inline template'
         });
 
         var view = new View();
@@ -166,7 +184,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     }
 
 
-    function underscoreTemplate(previewEl){
+    function underscoreTemplate(previewEl) {
         //starts here
         var View = Base.View.extend({
             template: _.template('this is underscore template')
@@ -180,7 +198,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         previewEl.html(view.el);
     }
 
-    function urlTemplate(previewEl){
+    function urlTemplate(previewEl) {
         //starts here
         var View = Base.View.extend({
             template: 'apps/examples/templates/urlTemplate.html'
@@ -194,41 +212,41 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         previewEl.html(view.el);
     }
 
-    function autoWiredChangeListeners(previewEl, consoleEl){
+    function autoWiredChangeListeners(previewEl, consoleEl) {
         //starts here
 
 
         var MyView = Base.View.extend({
-            template:'<div> <button class="btn but1 btn-primary">Change Attribute 1</button> <button class="btn but2 btn-primary">Change Attribute 2</button> </div>',
-            events:{
-                'click .but1':'but1ClickHandler',
-                'click .but2':'but2ClickHandler'
+            template: '<div> <button class="btn but1 btn-primary">Change Attribute 1</button> <button class="btn but2 btn-primary">Change Attribute 2</button> </div>',
+            events: {
+                'click .but1': 'but1ClickHandler',
+                'click .but2': 'but2ClickHandler'
             },
-            but1ClickHandler:function(e){
+            but1ClickHandler: function (e) {
                 e.preventDefault();
-                this.model.set('attribute1',new Date().toTimeString());
+                this.model.set('attribute1', new Date().toTimeString());
             },
-            but2ClickHandler:function(e){
+            but2ClickHandler: function (e) {
                 e.preventDefault();
-                this.model.set('attribute2',new Date().toTimeString());
+                this.model.set('attribute2', new Date().toTimeString());
             },
-            attribute1ChangeHandler:function(value){
+            attribute1ChangeHandler: function (value) {
                 this.printOutJSON();
             },
-            attribute2ChangeHandler:function(value){
+            attribute2ChangeHandler: function (value) {
                 this.printOutJSON();
             },
-            printOutJSON:function(){
+            printOutJSON: function () {
                 consoleEl.html(ExamplePage.syntaxHighlight(this.model.toJSON()));
             }
         })
         var model = new Base.Model({
-            attribute1:'value1',
-            attribute2:'value2'
+            attribute1: 'value1',
+            attribute2: 'value2'
         })
 
         var view = new MyView({
-            model:model
+            model: model
         })
         view.render();
         view.printOutJSON();
@@ -240,38 +258,38 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     }
 
 
-    function dataEvents(previewEl, consoleEl){
+    function dataEvents(previewEl, consoleEl) {
         //starts here
 
 
         var MyView = Base.View.extend({
-            template:'<div> <button class="btn but1 btn-primary">Change Attribute 1</button> <button class="btn but2 btn-primary">Change Attribute 2</button> </div>',
-            events:{
-                'click .but1':'but1ClickHandler',
-                'click .but2':'but2ClickHandler'
+            template: '<div> <button class="btn but1 btn-primary">Change Attribute 1</button> <button class="btn but2 btn-primary">Change Attribute 2</button> </div>',
+            events: {
+                'click .but1': 'but1ClickHandler',
+                'click .but2': 'but2ClickHandler'
             },
-            dataEvents:{
-                'change:attribute1 change:attribute2':'printOutJSON'
+            dataEvents: {
+                'change:attribute1 change:attribute2': 'printOutJSON'
             },
-            but1ClickHandler:function(e){
+            but1ClickHandler: function (e) {
                 e.preventDefault();
-                this.model.set('attribute1',new Date().toTimeString());
+                this.model.set('attribute1', new Date().toTimeString());
             },
-            but2ClickHandler:function(e){
+            but2ClickHandler: function (e) {
                 e.preventDefault();
-                this.model.set('attribute2',new Date().toTimeString());
+                this.model.set('attribute2', new Date().toTimeString());
             },
-            printOutJSON:function(){
+            printOutJSON: function () {
                 consoleEl.html(ExamplePage.syntaxHighlight(this.model.toJSON()));
             }
         })
         var model = new Base.Model({
-            attribute1:'value1',
-            attribute2:'value2'
+            attribute1: 'value1',
+            attribute2: 'value2'
         })
 
         var view = new MyView({
-            model:model
+            model: model
         })
         view.render();
         view.printOutJSON();
@@ -283,37 +301,37 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     }
 
 
-    function baseViewWithSubViews(previewEl, consoleEl){
+    function baseViewWithSubViews(previewEl, consoleEl) {
         //starts here
 
         var model = new Base.Model({
-            attribute1:'value1',
-            attribute2:'value2'
+            attribute1: 'value1',
+            attribute2: 'value2'
         })
 
         var view = new Base.View({
-            template:'<div>this is parent view <div class="subview-container" style="margin:0 10px; border: 1px solid #ccc; padding: 5px;"></div></div>',
-            views:{
-                subView1:{
-                    View:Base.View,
-                    model:model,
-                    template:'this is subview 1 {{stringify this}}',
-                    parentEl:'.subview-container',
-                    renderEvents:['change']
+            template: '<div>this is parent view <div class="subview-container" style="margin:0 10px; border: 1px solid #ccc; padding: 5px;"></div></div>',
+            views: {
+                subView1: {
+                    View: Base.View,
+                    model: model,
+                    template: 'this is subview 1 {{stringify this}}',
+                    parentEl: '.subview-container',
+                    renderEvents: ['change']
                 },
-                subView2:{
-                    View:Base.View,
-                    model:model,
-                    template:'this is subview 2  {{stringify this}}',
-                    parentEl:'.subview-container',
-                    renderEvents:['change']
+                subView2: {
+                    View: Base.View,
+                    model: model,
+                    template: 'this is subview 2  {{stringify this}}',
+                    parentEl: '.subview-container',
+                    renderEvents: ['change']
                 },
-                subView3:{
-                    View:Base.View,
-                    model:model,
-                    template:'this is subview 3 {{stringify this}}',
-                    parentEl:'.subview-container',
-                    renderEvents:['change']
+                subView3: {
+                    View: Base.View,
+                    model: model,
+                    template: 'this is subview 3 {{stringify this}}',
+                    parentEl: '.subview-container',
+                    renderEvents: ['change']
                 }
             }
         })
@@ -326,11 +344,11 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         previewEl.html(view.el);
 
-        $('<button class="btn">Change Attribute 1</button>').on('click', function(){
+        $('<button class="btn">Change Attribute 1</button>').on('click',function () {
             model.set('attribute1', new Date().toTimeString());
         }).appendTo(previewEl);
 
-        $('<button class="btn">Change Attribute 2</button>').on('click', function(){
+        $('<button class="btn">Change Attribute 2</button>').on('click',function () {
             model.set('attribute2', new Date().toTimeString());
         }).appendTo(previewEl);
 
@@ -338,21 +356,21 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     }
 
 
-    function setTemplate (previewEl, consoleEl){
+    function setTemplate(previewEl, consoleEl) {
         //starts here
         var clock = new Base.View({
-            template:'Current Time is: '+new Date().toTimeString()
+            template: 'Current Time is: ' + new Date().toTimeString()
         })
 
         var interval;
 
-        var startClock = function(){
-            interval = setInterval(function(){
-                clock.setTemplate('Current Time is: '+new Date().toTimeString())
-            },10)
+        var startClock = function () {
+            interval = setInterval(function () {
+                clock.setTemplate('Current Time is: ' + new Date().toTimeString())
+            }, 10)
         }
 
-        var stopClock = function(){
+        var stopClock = function () {
             clearInterval(interval);
         }
 
@@ -366,33 +384,32 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         $('<br/>').appendTo(previewEl);
 
-        $('<button class="btn">startClock()</button>').on('click', function(){
+        $('<button class="btn">startClock()</button>').on('click',function () {
             startClock();
         }).appendTo(previewEl);
 
-        $('<button class="btn">stopClock()</button>').on('click', function(){
+        $('<button class="btn">stopClock()</button>').on('click',function () {
             stopClock();
         }).appendTo(previewEl);
     }
 
 
-
-    function statedView (previewEl, consoleEl){
+    function statedView(previewEl, consoleEl) {
         //starts here
 
         var RedView = Base.View.extend({
-            template:'<div style="background-color: red">this is red view</div> '
+            template: '<div style="background-color: red">this is red view</div> '
         })
 
         var GreenView = Base.View.extend({
-            template:'<div style="background-color: green">this is green view</div> '
+            template: '<div style="background-color: green">this is green view</div> '
         })
 
         var statedView = new Base.View({
-            template:'<div class="state-view"></div>',
-            states:{
-                'red':RedView,
-                'green':GreenView
+            template: '<div class="state-view"></div>',
+            states: {
+                'red': RedView,
+                'green': GreenView
             }
         })
 
@@ -406,16 +423,14 @@ define(['base', './examplePage'], function(Base, ExamplePage){
 
         $('<br/>').appendTo(previewEl);
 
-        $('<button class="btn">statedView.setState("green")</button>').on('click', function(){
+        $('<button class="btn">statedView.setState("green")</button>').on('click',function () {
             statedView.setState('green')
         }).appendTo(previewEl);
 
-        $('<button class="btn">statedView.setState("red")</button>').on('click', function(){
+        $('<button class="btn">statedView.setState("red")</button>').on('click',function () {
             statedView.setState('red')
         }).appendTo(previewEl);
     }
-
-
 
 
     var PageModel = Base.Model.extend({
@@ -423,10 +438,9 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     });
 
 
-
     return {
-        Model:PageModel,
-        View:PageView
+        Model: PageModel,
+        View: PageView
     }
 
 })

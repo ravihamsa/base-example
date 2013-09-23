@@ -52,7 +52,6 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
 
         var oldPostRender = Form.View.prototype.postRender;
 
-
         var CustomForm = Form.View.extend({
             events: {
                 'submit form': 'formSubmitHandler',
