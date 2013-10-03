@@ -4,6 +4,7 @@
     <title>New App</title>
     <link rel="stylesheet" href="css/bootstrap.css"/>
     <link href="js/libs/pretty/prettify.css" type="text/css" rel="stylesheet" />
+    <link href="/kensho-css/kensho.css" type="text/css" rel="stylesheet" />
     <style type="text/css">
         body {
             background-color: #efefef;
@@ -110,14 +111,16 @@
 
 
 <script type="text/javascript">
+    var baseAppURL = 'http://ravihamsa.inmobi.com/ibone/js/';
+
     require.config({
         appDir: '../',
         baseUrl: './js',
         paths:{
-            'base':'http://ravihamsa.inmobi.com/baseapp/js/base',
-            'list':'http://ravihamsa.inmobi.com/baseapp/js/list',
-            'widgets':'http://ravihamsa.inmobi.com/baseapp/js/widgets',
-            text:'http://ravihamsa.inmobi.com/baseapp/js/plugins/requirejs-text-plugin'
+            'base':baseAppURL+'base',
+            'list':baseAppURL+'list',
+            'widgets':baseAppURL+'widgets',
+            text:baseAppURL+'plugins/requirejs-text-plugin'
         }
     });
 

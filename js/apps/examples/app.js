@@ -1,5 +1,6 @@
 define(['base/app', 'apps/examples/pages/landing', 'apps/examples/pages/baseView', 'apps/examples/pages/form', 'apps/examples/pages/list'],function(baseApp){
 
+
     var app = _.extend({},baseApp,{
         test:function(){
             console.log('testing advertiser app');
@@ -11,7 +12,12 @@ define(['base/app', 'apps/examples/pages/landing', 'apps/examples/pages/baseView
                 pageId = this.defaultPage
             }
 
+            if(baseApp.pageView){
+                baseApp.pageView.remove();
+            }
+
             require(['apps/examples/pages/'+pageId],function(Page){
+
                 var view = new Page.View({
                     model:new Page.Model(params)
                 })
@@ -19,6 +25,8 @@ define(['base/app', 'apps/examples/pages/landing', 'apps/examples/pages/baseView
                 el.empty();
                 el.html(view.render().el);
                 prettyPrint();
+
+                baseApp.pageView = view;
             })
 
         }

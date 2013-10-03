@@ -31,7 +31,7 @@ define(['base/app', 'base', 'list', './examplePage'], function (app, Base, List,
 
     function singleSelectList(previewEl, outputEl) {
 
-        //
+        //start
 
         var SingleSelect = List.SingleSelect;
 
@@ -46,19 +46,21 @@ define(['base/app', 'base', 'list', './examplePage'], function (app, Base, List,
             items: coll
         })
 
-        baseUtil.createView({View: SingleSelect.View, model: model, parentEl: previewEl});
+        var view = baseUtil.createView({View: SingleSelect.View, model: model, parentEl: previewEl, parentView:this});
 
-        //
+        //end
         outputEl.html(ExamplePage.syntaxHighlight(model.getSelected()));
-        model.on('all', function () {
+        view.listenTo(model,'all', function () {
+            outputEl.empty();
             outputEl.html(ExamplePage.syntaxHighlight(model.getSelected()));
         });
+
 
     }
 
     function multiSelectList(previewEl, outputEl) {
 
-        //
+        //start
 
         var MultiSelect = List.MultiSelect;
 
@@ -74,19 +76,19 @@ define(['base/app', 'base', 'list', './examplePage'], function (app, Base, List,
         })
 
 
-        baseUtil.createView({View: MultiSelect.View, model: model, parentEl: previewEl});
+        var view = baseUtil.createView({View: MultiSelect.View, model: model, parentEl: previewEl, parentView:this});
 
-        //
+        //end
 
         outputEl.html(JSON.stringify(model.getSelected()));
-        model.on('all', function () {
+        view.listenTo(model,'all', function () {
             outputEl.html(ExamplePage.syntaxHighlight(model.getSelected()));
         });
 
     }
     function multiSelectListWithSelectAllNone(previewEl, outputEl) {
 
-        //
+        //start
 
         var MultiSelect = List.MultiSelect;
 
@@ -105,29 +107,35 @@ define(['base/app', 'base', 'list', './examplePage'], function (app, Base, List,
         var MyListView = MultiSelect.View.extend({
             template:'<div> <a href="#selectAll" class="action">Select All</a> <a href="#selectNone" class="action">Select None</a> <div class="list-view"></div></div>',
             actionHandler:function(action){
+                var model = this.model;
                 switch(action){
                     case 'selectAll':
-                            this.model.selectAll();
+                            model.selectAll();
                         break;
                     case 'selectNone':
-                        this.model.selectNone();
+                        model.selectNone();
                         break;
                     default:
-                        this.model.setSelectedById(action); //default select click behavior
+                        model.setSelectedById(action); //default select click behavior
                         break;
                 }
             }
         })
 
 
-        baseUtil.createView({View: MyListView, model: model, parentEl: previewEl});
+        var view = baseUtil.createView({View: MyListView, model: model, parentEl: previewEl, parentView:this});
 
-        //
+        //end
 
-        outputEl.html(JSON.stringify(model.getSelected()));
-        model.on('all', function () {
+        outputEl.html(ExamplePage.syntaxHighlight(model.getSelected()));
+        view.listenTo(model,'all', function () {
+            outputEl.empty();
             outputEl.html(ExamplePage.syntaxHighlight(model.getSelected()));
         });
+
+        this.removeReferences(function(){
+            outputEl=null;
+        })
 
     }
 

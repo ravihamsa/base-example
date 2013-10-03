@@ -24,7 +24,7 @@ define(['base', './examplePage'], function(Base, ExamplePage){
         //
 
         var coll = new Base.Collection([{id:'one', name:'one'}, {id:'two', name:'two'}, {id:'three', name:'three'}, {id:'four', name:'four'}])
-        var view = baseUtil.createView({View:Base.CollectionView, collection:coll, parentEl:previewEl});
+        var view = baseUtil.createView({View:Base.CollectionView, collection:coll, parentEl:previewEl, parentView:this});
 
         var three = coll.get('three');
 
