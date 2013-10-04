@@ -35,7 +35,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
             {
                 func:customFormTemplate,
                 title:'Custom Template',
-                desc:'If form template have an element with class "element-{{name}}" form view skip rendering that element, but it do apply events depending on the type configured. It is developers responsibility to make sure every element has elements with class "help-block" which is used for providing inline help, and class "message-block" which will get used to show error/warning/alert/success messages. Use groups to align elements within a form. If form template has element with class "grp-{{group}} form will skip rendering group container, any element that is configured to be in given group will get rendered in that element.'
+                desc:'If form template have an element with class "element-{{name}}" form view skip rendering that element, but it do apply events depending on the type configured. It is developers responsibility to make sure every element has elements with class "form-group" which act as a container to the element, which is where "has-error" class get added when there is an validation error, element with class "help-block" which is used for providing inline help, and class "message-block" which will get used to show error/warning/alert/success messages. Use groups to align elements within a form. If form template has element with class "grp-{{group}} form will skip rendering group container, any element that is configured to be in given group will get rendered in that element.'
             }
         ]
 
@@ -46,8 +46,13 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         //custom template
 
         var coll = new Form.ElementCollection([
-            {name: 'userName'},
-            {name: 'password', type: 'password'}
+            {name: 'userName', validationRules:[
+                {expr:'req'},
+                {expr:'email'}
+            ]},
+            {name: 'password', type: 'password', validationRules:[{
+                expr:'req'
+            }]}
         ])
 
         var formModel = new Form.Model({
