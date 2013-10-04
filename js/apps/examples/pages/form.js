@@ -31,10 +31,47 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
             {
                 func: customForm,
                 title: 'Custom Form'
+            },
+            {
+                func:customFormTemplate,
+                title:'Custom Template'
             }
         ]
 
     })
+
+
+    function customFormTemplate(previewEl,consoleEl){
+        //custom template
+
+
+        var formTemplate = 'apps/examples/templates/fullFormTemplate.html';
+
+        var coll = new Form.ElementCollection([
+            {name: 'userName'},
+            {name: 'password', type: 'password'}
+        ])
+
+        var formModel = new Form.Model({
+            elements: coll
+        });
+
+        var form = new Form.View({
+            template:formTemplate,
+            model: formModel
+        })
+
+        form.render();
+
+        //end here
+
+        previewEl.html(form.el);
+
+        form.on('formSubmit', function (formData) {
+            consoleEl.html(ExamplePage.syntaxHighlight(formData));
+        })
+
+    }
 
 
     function customForm(previewEl, consoleEl) {

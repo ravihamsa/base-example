@@ -12,7 +12,7 @@
     },
     dir: '../dist',
     optimize: 'none',
-    fileExclusionRegExp: /(build|idea)/,
+    fileExclusionRegExp: /(build|idea|.git|.gitignore)/,
     modules: [
 
         {
