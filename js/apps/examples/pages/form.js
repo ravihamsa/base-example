@@ -35,7 +35,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
             {
                 func:customFormTemplate,
                 title:'Custom Template',
-                desc:'If form template have an element with class "element-{{name}}" form view skip rendering that element, but it do apply events depending on the type configured. It is developers responsibility to make sure every element has elements with class "help-block" which is used for providing inline help, and class "message-block" which will get used to show error/warning/alert/success messages'
+                desc:'If form template have an element with class "element-{{name}}" form view skip rendering that element, but it do apply events depending on the type configured. It is developers responsibility to make sure every element has elements with class "help-block" which is used for providing inline help, and class "message-block" which will get used to show error/warning/alert/success messages. Use groups to align elements within a form. If form template has element with class "grp-{{group}} form will skip rendering group container, any element that is configured to be in given group will get rendered in that element.'
             }
         ]
 
