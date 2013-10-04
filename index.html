@@ -7,14 +7,57 @@
     <link href="/kensho-css/kensho.css" type="text/css" rel="stylesheet" />
     <style type="text/css">
         body {
-            background-color: #efefef;
+            background-color: #ecf0f3;
         }
 
         #header {
-            background-color: #000;
-            padding: 10px 10px 10px 20px;
+            border-bottom: 1px solid #ccc;
         }
 
+        #header .container {
+            position: relative;
+        }
+        #header .logo {
+            position: absolute;
+            left:0px;
+            top:20px;
+        }
+
+        .nav-items {
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .nav-items a {
+            color:#666;
+            display: block;
+            padding: 20px 10px 10px 10px;
+            border-radius: 0 0 5px 5px;
+            border:1px solid #ecf0f3;
+            outline: none;
+            text-decoration: none;
+
+
+        }
+
+        .nav-items a:hover {
+            text-decoration: none;
+        }
+
+        .nav-items .active {
+            background-color: transparent;
+        }
+        .nav-items .active a {
+            background-color: #e0e7ed;
+            color:#333;
+            border:1px solid #f6f6f6;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .nav-items li{
+            display: inline-block;
+            margin: 0 10px;
+        }
 
         .nav-pills {
             float: left;
@@ -83,20 +126,13 @@
 </head>
 <body>
 
+<div id="header">
 
-<div class="row-fluid">
-    <div class="col-md-12" id="header">
-
-    </div>
 </div>
-<div class="row-fluid">
-    <div class="col-md-2 left-nav">
-        <!--Sidebar content-->
-    </div>
-    <div class="col-md-10">
-        <div id="app-body">
 
-        </div>
+<div class="container">
+    <div id="app-body">
+
     </div>
 </div>
 
@@ -126,8 +162,9 @@
 
     require(['base'],function(Base){
         var app = Base.app;
-        app.defaultApp = 'examples';
-        var RootView = Base.Root.View;
+        app.defaultApp = 'introduction';
+        var RootView = Base.Root.View.extend({
+        });
 
         var view = new RootView({
             model:app.appModel,
