@@ -44,9 +44,6 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
     function customFormTemplate(previewEl,consoleEl){
         //custom template
 
-
-        var formTemplate = 'apps/examples/templates/fullFormTemplate.html';
-
         var coll = new Form.ElementCollection([
             {name: 'userName'},
             {name: 'password', type: 'password'}
@@ -57,7 +54,7 @@ define(['base/app', 'base', 'widgets/form', './examplePage'], function (app, Bas
         });
 
         var form = new Form.View({
-            template:formTemplate,
+            template:'apps/examples/templates/fullFormTemplate.html',
             model: formModel
         })
 
