@@ -6,40 +6,72 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base', './examplePage'], function(Base, ExamplePage){
+define(['base', './examplePage'], function (Base, ExamplePage) {
 
     var baseUtil = Base.util;
 
     var PageView = ExamplePage.View.extend({
-        examples:[
+        examples: [
             {
-                func:modelPositions,
-                title:'Model Position'
+                func: modelPositions,
+                title: 'Model Position'
+            },
+            {
+                func: configModel,
+                title: 'Configurable Model'
             }
         ]
     })
 
 
-    function modelPositions(previewEl){
+    function modelPositions(previewEl) {
         //
 
-        var coll = new Base.Collection([{id:'one', name:'one'}, {id:'two', name:'two'}, {id:'three', name:'three'}, {id:'four', name:'four'}])
-        var view = baseUtil.createView({View:Base.CollectionView, collection:coll, parentEl:previewEl, parentView:this});
+        var coll = new Base.Collection([
+            {id: 'one', name: 'one'},
+            {id: 'two', name: 'two'},
+            {id: 'three', name: 'three'},
+            {id: 'four', name: 'four'}
+        ])
+        var view = baseUtil.createView({View: Base.CollectionView, collection: coll, parentEl: previewEl, parentView: this});
 
         var three = coll.get('three');
 
-        //
-        $('<button class="btn">Move Three Up</button>').on('click', function(){
+        //ends
+        $('<button class="btn">Move Three Up</button>').on('click',function () {
             three.moveUp();
         }).appendTo(previewEl);
 
-        $('<button class="btn">Move Three Down</button>').on('click', function(){
+        $('<button class="btn">Move Three Down</button>').on('click',function () {
             three.moveDown();
         }).appendTo(previewEl);
 
     }
 
 
+    function configModel(previewEl) {
+        //start
+
+        var model = new Base.ConfigurableModel({attribute1:'value1'}, {config: {
+            initConfig: 'init configValue'
+        }});
+
+        model.on('config_change', function (configModel, value) {
+            console.log(configModel.changed, configModel, this);
+        });
+
+        model.setConfig('config1', 'value1');
+
+        model.setConfigs({
+            config2: 'value2',
+            config3: 'value3'
+        })
+
+        console.log(model.getConfigs());
+
+        //end
+
+    }
 
 
     var PageModel = Base.Model.extend({
@@ -47,8 +79,8 @@ define(['base', './examplePage'], function(Base, ExamplePage){
     });
 
     return {
-        Model:PageModel,
-        View:PageView
+        Model: PageModel,
+        View: PageView
     }
 
 })
