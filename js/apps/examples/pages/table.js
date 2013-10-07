@@ -16,6 +16,10 @@ define(['base', 'widgets/table', './examplePage'], function (Base, Table, Exampl
             {
                 func:extendedTable,
                 title:'Extended Table'
+            },
+            {
+                func:simpleTable,
+                title:'Basic Table'
             }
 
         ]
@@ -57,8 +61,7 @@ define(['base', 'widgets/table', './examplePage'], function (Base, Table, Exampl
         var view = new Table.View({
             columns: columns,
             rowCollection: coll,
-            model: tableModel,
-            template: '<div class="table-header"></div> <table class="row-list"></table><div class="table-footer"> <a href="#nextPage" class="action">Next Page</a> <a href="#prevPage" class="action">Prev Page</a></div>'
+            model: tableModel
         })
 
         view.render();
