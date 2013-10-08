@@ -24,11 +24,85 @@ define(['base', 'base/dataLoader', 'widgets/table', './examplePage'], function (
             {
                 func: serverPaginated,
                 title: 'Server Paginated'
+            },
+            {
+                func: usingCollectionFetch,
+                title: 'Server Paginated, Using collection fetch'
             }
 
         ]
     })
 
+
+    function usingCollectionFetch(previewEl, consoleEl) {
+
+
+        //starts
+
+        var ExtendedTable = Table.View.extend({
+            template: '<div class="table-header"></div> <table class="row-list"></table><div class="table-footer"> <a href="#nextPage" class="action">Next Page</a> <a href="#prevPage" class="action">Prev Page</a></div>',
+            actionHandler: function (action) {
+                var coll = this.getOption('rowCollection');
+                switch (action) {
+                    case 'nextPage':
+                        coll.nextPage();
+                        break;
+                    case 'prevPage':
+                        coll.prevPage();
+                        break;
+                }
+            }
+        })
+
+        var columns = [
+            {key: 'name', formatter: function (value) {
+                return value.title + '. ' + value.first + ' ' + value.last;
+            }},
+            {key: 'picture', renderHTML: true, formatter: function (value) {
+                return  '<img src="' + value + '" width="50" height="50" />'
+            }},
+            {key: 'email'},
+            {key: 'phone'}
+        ]
+
+
+        var coll = new Table.RowCollection();
+        coll.setConfigs({paginated: true, page: 1, results: 5, perPage: 5, baseUrl: 'http://api.randomuser.me/'});
+
+        var randomUserParser = function (data) {
+            if (data.errors) {
+                return data;
+            } else {
+                return {
+                    results: _.map(data.results, function (item) {
+                        return item.user;
+                    }),
+                    totalRecords: 100
+                }
+            }
+        }
+
+
+        var tableModel = new Table.Model();
+        coll.setConfig('sortKey', 'date');
+
+        var view = new ExtendedTable({
+            columns: columns,
+            rowCollection: coll,
+            model: tableModel
+        })
+
+        view.render();
+
+        coll.on('config_change', function () {
+            view.render();
+        })
+
+        //ends
+
+        view.$el.appendTo(previewEl);
+
+    }
 
     function serverPaginated(previewEl, consoleEl) {
 
@@ -68,10 +142,10 @@ define(['base', 'base/dataLoader', 'widgets/table', './examplePage'], function (
                 return data;
             } else {
                 return {
-                    results: _.map(data.results,function(item){
+                    results: _.map(data.results, function (item) {
                         return item.user;
                     }),
-                    totalRecords:100
+                    totalRecords: 100
                 }
             }
         }
@@ -80,7 +154,7 @@ define(['base', 'base/dataLoader', 'widgets/table', './examplePage'], function (
             type: 'GET',
             url: 'http://api.randomuser.me/',
             parser: randomUserParser,
-            paramsParser:function(params){
+            paramsParser: function (params) {
                 params.results = params.perPage;
                 return params;
             }
