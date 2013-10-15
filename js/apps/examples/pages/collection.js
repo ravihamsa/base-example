@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base', 'base/dataLoader', './examplePage'], function (Base, dataLoader, ExamplePage) {
+define(['base', 'base/dataLoader', './examplePage', 'widgets/table'], function (Base, dataLoader, ExamplePage, Table) {
 
     var app = Base.app;
 
@@ -29,7 +29,7 @@ define(['base', 'base/dataLoader', './examplePage'], function (Base, dataLoader,
             {name: 'ravi', kam: 'coding'},
             {name: 'john', kam: 'going home'}
         ]
-        var coll = new Base.Collection(arr);
+        var coll = new Table.RowCollection(arr);
         //coll.addFilter({column: 'name', expr: 'eq', value: 'ravi'})
         coll.addFilter({column: 'name', expr: 'startsWith', value: 'ravi'})
         //coll.addFilter({column: 'name', expr: 'endsWith', value: 'ravi'})
