@@ -1,4 +1,4 @@
-define(['base/app', 'apps/user/pages/login'],function(baseApp){
+define(['base/app','base/dataLoader', 'apps/user/pages/login'],function(baseApp, dataLoader){
 
     var app = _.extend({},baseApp,{
         test:function(){
@@ -30,6 +30,14 @@ define(['base/app', 'apps/user/pages/login'],function(baseApp){
 
         }
     });
+
+
+    dataLoader.define('userProfile',{
+        url:'http://api.randomuser.me/?seed=goldenMeercat',
+        parser:function(data){
+            return data.results[0].user;
+        }
+    })
 
 
     return app;

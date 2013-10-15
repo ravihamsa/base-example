@@ -6,9 +6,11 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base', 'widgets/form', 'text!../templates/login.html'], function (Base, Form, loginTemplate) {
+define(['base', 'widgets/form', 'text!../templates/pages/login.html'], function (Base, Form, loginTemplate) {
 
     var baseUtil = Base.util;
+    var baseApp = Base.app;
+
 
     var PageView = Base.View.extend({
         template: loginTemplate,
@@ -36,6 +38,7 @@ define(['base', 'widgets/form', 'text!../templates/login.html'], function (Base,
                 {
                     name: 'loginButton',
                     type: 'submit',
+                    value:'login',
                     group: 'buttons'
                 }
             ]
@@ -61,7 +64,7 @@ define(['base', 'widgets/form', 'text!../templates/login.html'], function (Base,
                 if (dataObj.errors) {
                     console.log('errors', dataObj.errors);
                 } else {
-                    console.log('ready for submit');
+                    baseApp.router.navigate('#user/profile', {trigger:true});
                 }
             })
 
