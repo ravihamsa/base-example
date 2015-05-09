@@ -6,24 +6,24 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base/app','base','text!../templates/pages/examplePage.html'], function(app,Base, template){
+define(['base/app', 'base', 'text!../templates/pages/examplePage.html'], function(app, Base, template) {
 
     var exampleTemplateFunction = app.compileTemplate('<div id="{{func.name}}"> <h1>{{title}}</h1><p>{{desc}}</p><p style="text-align: right"><a href="#top" class="exampleLink">Top</a> </p><div class="bs-docs-code"><pre></pre></div><div class="preview bs-docs-demo"></div> <div class="output bs-docs-output "><pre></pre></div></div>');
 
     var PageView = Base.View.extend({
-        template:template,
-        events:{
-            'click .exampleLink':'scrollToExample'
+        template: template,
+        events: {
+            'click .exampleLink': 'scrollToExample'
         },
-        postRender:function(){
+        postRender: function() {
             var _this = this;
-            var examples =  this.examples;
+            var examples = this.examples;
 
             var listEl = $('<ul class="nav nav-list"></ul>');
             var codeEl = $('<div></div>');
             this.$el.append(listEl);
             this.$el.append(codeEl);
-            _.each(examples, function (example) {
+            _.each(examples, function(example) {
                 var func = example.func;
 
                 var commentRegex = /^\/\//;
@@ -32,7 +32,7 @@ define(['base/app','base','text!../templates/pages/examplePage.html'], function(
                 var exampleName = func.name;
                 var startIndex = functionString.indexOf(commentRegex) - 8;
                 var lastIndex = functionString.lastIndexOf(commentRegex);
-                listEl.append('<li><a class="exampleLink" href="#'+exampleName+'">'+example.title+' </a> </li>');
+                listEl.append('<li><a class="exampleLink" href="#' + exampleName + '">' + example.title + ' </a> </li>');
                 codeEl.append(exampleTemplateFunction(example));
                 var preEl = _this.$('#' + exampleName + ' .bs-docs-code pre');
                 var previewEl = _this.$('#' + exampleName + ' .preview');
@@ -45,19 +45,19 @@ define(['base/app','base','text!../templates/pages/examplePage.html'], function(
 
                 //preEl.addClass('linenums');
                 //preEl.html(Handlebars.Utils.escapeExpression(functionString.substr(startIndex, lastIndex - startIndex)));
-                preEl.html(Handlebars.Utils.escapeExpression(functionString.match(/(?=\/\/.+)[\s\S]+(?=\/\/[/s|e])/m)));
+                preEl.html(syntaxHighlight(Handlebars.Utils.escapeExpression(functionString.match(/(?=\/\/.+)[\s\S]+(?=\/\/[/s|e])/m))));
                 func.call(_this, previewEl, outputEl);
-            })
+            });
         },
-        scrollToExample:function(e){
+        scrollToExample: function(e) {
             e.preventDefault();
             var target = $(e.target);
-            var exampleId =  target.attr('href');
+            var exampleId = target.attr('href');
             $('html, body').animate({
                 scrollTop: this.$(exampleId).offset().top + 'px'
             }, 'slow');
         }
-    })
+    });
 
     var PageModel = Base.Model.extend({
 
@@ -90,9 +90,9 @@ define(['base/app','base','text!../templates/pages/examplePage.html'], function(
     }
 
     return {
-        Model:PageModel,
-        View:PageView,
-        syntaxHighlight:syntaxHighlight
-    }
+        Model: PageModel,
+        View: PageView,
+        syntaxHighlight: syntaxHighlight
+    };
 
-})
+});

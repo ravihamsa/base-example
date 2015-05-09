@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base', './examplePage'], function (Base, ExamplePage) {
+define(['base','apps/examples/pages/examplePage'], function (Base, ExamplePage) {
 
     var baseUtil = Base.util;
 
@@ -15,13 +15,9 @@ define(['base', './examplePage'], function (Base, ExamplePage) {
             {
                 func: modelPositions,
                 title: 'Model Position'
-            },
-            {
-                func: configModel,
-                title: 'Configurable Model'
             }
         ]
-    })
+    });
 
 
     function modelPositions(previewEl) {
@@ -48,30 +44,6 @@ define(['base', './examplePage'], function (Base, ExamplePage) {
 
     }
 
-
-    function configModel(previewEl) {
-        //start
-
-        var model = new Base.ConfigurableModel({attribute1:'value1'}, {config: {
-            initConfig: 'init configValue'
-        }});
-
-        model.on('config_change', function (configModel, value) {
-            console.log(configModel.changed, configModel, this);
-        });
-
-        model.setConfig('config1', 'value1');
-
-        model.setConfigs({
-            config2: 'value2',
-            config3: 'value3'
-        })
-
-        console.log(model.getConfigs());
-
-        //end
-
-    }
 
 
     var PageModel = Base.Model.extend({

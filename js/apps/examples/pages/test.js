@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base/app', 'base', 'common/widgets/form', './examplePage'], function (app, Base, Form, ExamplePage) {
+define(['base/app', 'base', 'common/widgets/form','apps/examples/pages/examplePage'], function (app, Base, Form, ExamplePage) {
 
 
     var PageView = ExamplePage.View.extend({

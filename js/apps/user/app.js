@@ -23,8 +23,6 @@ define(['base/app','base/dataLoader', 'apps/user/pages/login'],function(baseApp,
                 var el = $(baseApp.appBody);
                 el.empty();
                 el.html(view.render().el);
-                prettyPrint();
-
                 baseApp.pageView = view;
             })
 

@@ -1,194 +1,317 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>New App</title>
-    <link rel="stylesheet" href="css/bootstrap.css"/>
+    <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
     <link href="js/libs/pretty/prettify.css" type="text/css" rel="stylesheet" />
-    <link href="/kensho-css/kensho.css" type="text/css" rel="stylesheet" />
+    <link href="/kensho-css/custom/dist/css/kensho.min.css" type="text/css" rel="stylesheet" />
     <link href="css/datatable.css" type="text/css" rel="stylesheet" />
+    <link href="css/drop-down.css" type="text/css" rel="stylesheet" />
     <style type="text/css">
-        body {
-            background-color: #ecf0f3;
-        }
+    body {
+        background-color: #ecf0f3;
+    }
+    #header {
+        border-bottom: 1px solid #ccc;
+        margin-bottom: 20px;
+    }
+    #header .container {
+        position: relative;
+    }
+    #header .logo {
+        position: absolute;
+        left:20px;
+        top:20px;
+    }
+    .nav-items {
+        text-align: center;
+        text-transform: uppercase;
+    }
+    .nav-items a {
+        color:#666;
+        display: block;
+        padding: 20px 10px 10px 10px;
+        border-radius: 0 0 5px 5px;
+        border:1px solid #ecf0f3;
+        outline: none;
+        text-decoration: none;
+    }
+    .nav-items a:hover {
+        text-decoration: none;
+    }
+    .nav-items .active {
+        background-color: transparent;
+    }
+    .nav-items .active a {
+        background-color: #e0e7ed;
+        color:#333;
+        border:1px solid #f6f6f6;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    .nav-items li {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    .nav-pills {
+        float: left;
+        margin-bottom: 0;
+        margin-left: 50px;
+    }
+    .nav-pills li a {
+        text-transform: uppercase;
+    }
+    .element {
+        clear:both;
+    }
+    .preview {
+        padding: 20px;
+        border: 2px solid #e1e1e8;
+        border-radius: 10px;
+    }
+    .loading {
+        opacity: 0.5;
+        position: relative;
+        cursor: progress;
+    }
+    .loading:after {
+        content:'Loading';
+        position: absolute;
+        top:50%;
+        bottom:0;
+        left:0;
+        right:0;
+        text-align: center;
+    }
+    .active {
+        background-color: aquamarine;
+    }
+    .custom-form fieldset {
+        margin-bottom: 20px;
+        border: 1px solid #c0c0c0;
+    }
+    .custom-form fieldset .element-list {
+        padding:10px;
+    }
+    .custom-form fieldset .element-container {
+        max-height: 0;
+        transition: max-height 0.25s ease-out;
+        overflow: hidden;
+    }
+    .custom-form fieldset.open .element-container {
+        max-height: 500px;
+    }
+    .custom-form fieldset h3 {
+        background-color: #ccc;
+        margin: 0;
+        padding: 10px;
+    }
+    #app-body {
+        padding: 20px;
+        border:1px solid #dae2e7;
+        border-radius: 5px;
+        background-color: #fff;
+        box-shadow: 0 0 5px #DAE2E7;
+    }
+    .message-stack ul, .message-stack li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    /*
+    .drop-down .toggle-but {
+        border:1px solid #ccc;
+        padding:5px;
+        background-color:#fff;
+    }
+    .drop-down .toggle-body ul {
+        margin: 0;
+        padding: 0;
+    }
+    .drop-down .toggle-body li {
+        list-style: none;
+    }
+    .drop-down .toggle-body li:hover {
+        background-color: #efefef;
+    }
+    .drop-down .toggle-body li a {
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow:ellipsis;
+        padding:5px;
+    }
+    .drop-down .toggle-body li.active {
+        background-color: blue;
+    }
+    .drop-down .toggle-body li.active a {
+        color:#fff;
+    }
+    .drop-down .toggle-body {
+        max-height: 200px;
+        overflow: auto;
+    }
+    */
 
-        #header {
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 20px;
-        }
 
-        #header .container {
-            position: relative;
-        }
-        #header .logo {
-            position: absolute;
-            left:20px;
-            top:20px;
-        }
+    .level-selector ul, .level-selector li {
+        margin:0;
+        padding:0;
+        list-style: none;
+    }
 
-        .nav-items {
-            text-align: center;
-            text-transform: uppercase;
-        }
+     .level-selector li a {
+        display: block;
+        padding:5px;
+     }
 
-        .nav-items a {
-            color:#666;
-            display: block;
-            padding: 20px 10px 10px 10px;
-            border-radius: 0 0 5px 5px;
-            border:1px solid #ecf0f3;
-            outline: none;
-            text-decoration: none;
+    .level-selector .cat-list, .level-selector .sub-list {
+        vertical-align: top;
+        background-color:#fff;
+    }
 
+    .level-selector .cat-list {
+        width:100px;
+        display: inline-block;
+    }
+    .level-selector .sub-list{
+        width:150px;
+        display: inline-block;
+        max-height: 200px;
+        overflow: auto;
+    }
 
-        }
+    .level-selector .summary-view li {
+        display: inline-block;
+        padding:5px 30px 5px 10px;
+        margin: 0 5px 5px 0;
+        background-color: #ffefef;
+    }
 
-        .nav-items a:hover {
-            text-decoration: none;
-        }
+    .level-selector.open .toggle-body {
+        display: inline-block;
+        border:1px solid #efefef;
+        white-space: nowrap;
+        background-color: #fff;
+    }
 
-        .nav-items .active {
-            background-color: transparent;
-        }
-        .nav-items .active a {
-            background-color: #e0e7ed;
-            color:#333;
-            border:1px solid #f6f6f6;
-            font-weight: bold;
-            text-decoration: none;
-        }
-        .nav-items li{
-            display: inline-block;
-            margin: 0 10px;
-        }
+    .sub-list .item-list .active {
+        display: none!important;
+    }
 
-        .nav-pills {
-            float: left;
-            margin-bottom: 0;
-            margin-left: 50px;
+    .summary-item {
+        display: inline-block;
+        position: relative;
+    }
 
-        }
+    .summary-item a {
+        position:absolute;
+        right:0;
+        top:0;
+    }
 
-        .nav-pills li a {
-            text-transform: uppercase;
-        }
-        .element{
-            clear:both;
-        }
+    .hidden {
+        display: none;
+    }
+    .level-selector .toggle-but {
+        background-color: #fff;
+        border:1px solid #ccc;
+        max-height: 90px;
+        min-height: 30px;
+        overflow: auto;
+        width:200px;
+    }
 
-        .preview{
-            padding: 20px;
-            border: 2px solid #e1e1e8;
-            border-radius: 10px;
-        }
+    .data-table .table-grp  td{
+        text-align: left;
 
-        .loading {
-            opacity: 0.5;
-            position: relative;
-        }
+    }
+    .data-table .table-grp.level0 td{
+        font-size: 20px;
+        font-weight: bold;
+    }
 
-        .loading:after{
-            content: 'Loading';
-            position: absolute;
-            top:50%;
-            bottom:0;
-            left:0;
-            right:0;
-            text-align: center;
-        }
+    .data-table .table-grp.level1 td{
+        font-size: 14px;
+        font-weight: bold;
+        padding-left: 40px;
+    }
 
-        .active {
-            background-color: aquamarine;
-        }
-
-        .custom-form fieldset{
-            margin-bottom: 20px;
-            border: 1px solid #c0c0c0;
-        }
-
-        .custom-form fieldset .element-list {
-            padding:10px;
-        }
-        .custom-form fieldset .element-container {
-            max-height: 0;
-            transition: max-height 0.25s  ease-out;
-            overflow: hidden;
-        }
-
-
-        .custom-form fieldset.open .element-container{
-            max-height: 500px;
-        }
-
-        .custom-form fieldset h3 {
-            background-color: #ccc;
-            margin: 0;
-            padding: 10px;
-        }
-
-        #app-body {
-            padding: 20px;
-            border:1px solid #dae2e7;
-            border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 0 5px #DAE2E7;
-
-        }
-
+    .nested-table .nested-row.level1 td:first-child {
+        padding-left: 40px;
+    }
+    .nested-table .nested-row.level2 td:first-child {
+        padding-left: 60px;
+    }
     </style>
 </head>
+
 <body>
 
-<div id="header">
-
-</div>
-
-<div class="container">
-    <div id="app-body">
+    <div id="header">
 
     </div>
-</div>
+
+    <div class="container">
+        <div id="app-body">
+
+        </div>
+    </div>
 
 
-<script type="text/javascript" src="js/libs/pretty/prettify.js"></script>
-<script type="text/javascript" src="js/libs/jquery-1.9.1.js"></script>
-<script type="text/javascript" src="js/libs/underscore.js"></script>
-<script type="text/javascript" src="js/libs/backbone.js"></script>
-<script type="text/javascript" src="js/libs/md5-min.js"></script>
-<script type="text/javascript" src="js/libs/handlebars.js"></script>
-<script type="text/javascript" src="js/libs/moment.min.js"></script>
-<script type="text/javascript" src="js/libs/require-min.js"></script>
+
+    <script type="text/javascript" src="js/libs/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/libs/highcharts.src.js"></script>
+    <script type="text/javascript" src="js/libs/pretty/prettify.js"></script>
+    <script type="text/javascript" src="js/libs/underscore.js"></script>
+    <script type="text/javascript" src="js/libs/backbone.js"></script>
+    <script type="text/javascript" src="js/libs/md5-min.js"></script>
+    <script type="text/javascript" src="js/libs/handlebars.js"></script>
+    <script type="text/javascript" src="js/libs/moment.min.js"></script>
+    <script type="text/javascript" src="js/libs/require-min.js"></script>
 
 
-<script type="text/javascript">
+
+    <script type="text/javascript">
     var baseAppURL = '/ibone/js/';
+    var stringUrl = 'data/strings.json';
 
     require.config({
         appDir: '../',
         baseUrl: './js',
-        paths:{
-            'base':baseAppURL+'base',
-            'list':baseAppURL+'list',
-            'widgets':baseAppURL+'widgets',
-            text:baseAppURL+'plugins/requirejs-text-plugin'
+        paths: {
+            'base': baseAppURL + 'base',
+            'list': baseAppURL + 'list',
+            'widgets': baseAppURL + 'widgets',
+            text: baseAppURL + 'plugins/requirejs-text-plugin'
         }
     });
 
-    require(['base'],function(Base){
+    require(['base'], function(Base) {
         var app = Base.app;
         app.defaultApp = 'introduction';
-        var RootView = Base.Root.View.extend({
-        });
+        var RootView = Base.Root.View.extend({});
 
         var view = new RootView({
-            model:app.appModel,
-            el:$('body')
-        })
+            model: app.appModel,
+            el: $('body')
+        });
+
         view.postRender();
-        Backbone.history.start({
-            root: this.root
+
+        var stringRequest = $.getJSON(stringUrl);
+
+        stringRequest.done(function(stringIndex) {
+            app.updateStringIndex(stringIndex);
+            Backbone.history.start({
+                root: this.root
+            })
         })
+
     });
-</script>
+    </script>
 
 </body>
+
 </html>

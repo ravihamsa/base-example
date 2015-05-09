@@ -1,0 +1,85 @@
+<div>
+    <h1>Watcher</h1>
+    <p>Watcher is a utility model which can be shared across hierarchy of sub views. Watcher has to be defined on a view, which act as a source view, and all child/sub views created under source view will have access to this watcher. This can be used to watch changes happening on any model or collection or any Backcone.Events capable instance. While watching you can add a parser or composer which helps you to customize what changes will get watched by watcher, and how those changes can be applied back to source model or collections when needed. </p>
+
+
+    <h2>Adding a Watcher to View</h2>
+    <p>Defining a `Watcher` class to view will add watcher to the view instance, and watcher defined in parent available for all children through which childViews can communicate with the parent View</p>
+    <pre class=" lang-js">
+        var DemoView = Base.View.extend({
+            template: 'template',
+            Watcher: Base.Watcher
+        });
+    </pre>
+
+
+
+    <h2>addWatch</h2>
+    <p>Once defined you can addWatch from a view, which intern add watch for view's watcher. addWatch accept config object, name and source or the mandatory configs. Optionally config can have "parser" and "composer" functions. Once added watcher will keep watching for events on source</p>
+    <pre class=" lang-js">
+        this.addWatch({
+            name:'attributeName', //attribute name in which watcher save output from the source
+            source:this.model  // A source which watcher should watch for
+        })
+    </pre>
+
+
+    <pre class=" lang-js">
+        this.addWatch({
+                    name:'h1ClickCountAtWatcher',
+                    source:this.model,
+                    parser: function(model){
+                        return model.get('h1ClickCount');
+                    },
+                    composer: function(model, h1ClickCountAtWatcher){
+                        model.set('h1ClickCount', h1ClickCountAtWatcher);
+                    }
+                })
+    </pre>
+
+
+    <h2>watcherEvents</h2>
+    <p>Similar to events hash in Backbone, you can add `watcherEvents' hash to the view, this can be done on sourceView or it's child views</p>
+    <pre class=" lang-js">
+         watcherEvents :{
+                'change:someAttribute': function(){
+                    console.log(arguments, 'watcherEvents');
+                }
+            }
+    </pre>
+
+    <h2>watcherTrigger</h2>
+    <p>watcherTrigger can be used as messaging/data exchange mechanism with sourceView and it's child views</p>
+
+    <pre>
+        var SubView1 = Base.View.extend({
+            watcherEvents:{
+                'someEvent': function(){
+                    alert('someEvent');
+                },
+                eventFromParent: function(){
+                    alert('eventFromParent');
+                }
+            },
+            template:'subview1 <a class="action" href="#triggerEvent"> click me </a>',
+            actionHandler: function(action, params, event){
+                event.actionHandled  = true;
+                //-------//
+                this.watcherTrigger('someEvent');
+            },
+            postRender: function(){
+                var _this = this;
+                _this.addWatch({
+                    name:'someAttribute',
+                    source:_this.model
+                });
+                setTimeout(function(){
+                    _this.model.set('attribute1', 'value1')
+                },300)
+            }
+        })
+
+    </pre>
+
+    <div class="sub-view-container"></div>
+</div>

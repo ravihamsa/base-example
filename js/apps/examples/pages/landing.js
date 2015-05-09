@@ -6,25 +6,31 @@
  * To change this template use File | Settings | File Templates.
  */
 
-define(['base','text!../templates/pages/landing.html'], function(Base, template){
+define(['base', 'text!../templates/pages/landing.html'], function(Base, template) {
 
 
     var PageView = Base.View.extend({
-        template:template,
-        makeItRed:function(){
+        template: template,
+        events: {
+            'mouseover mouseout a': 'moveHandler'
+        },
+        moveHandler: function() {
+            console.log(arguments);
+        },
+        makeItRed: function() {
             this.$el.css({
-                'background-color':'red'
-            })
+                'background-color': 'red'
+            });
         }
-    })
+    });
 
     var PageModel = Base.Model.extend({
 
     });
 
     return {
-        Model:PageModel,
-        View:PageView
-    }
+        Model: PageModel,
+        View: PageView
+    };
 
-})
+});

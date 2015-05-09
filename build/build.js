@@ -19,6 +19,18 @@
             name: 'apps/examples',
             include: [
                 'apps/examples/app'
+            ],
+            exclude:[
+                'text'
+            ]
+        },
+        {
+            name: 'apps/introduction',
+            include: [
+                'apps/introduction/app'
+            ],
+            exclude:[
+                'text'
             ]
         }
     ]

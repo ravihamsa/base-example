@@ -1,0 +1,26 @@
+{{#each data}}
+{{#if this.children}}
+    {{#if ../this.isDisplay }}
+    <li class="ibone-drp-results-dept-0 ibone-drp-result ibone-drp-result-unselectable ibone-drp-result-with-children">
+    <div class="ibone-drp-result-label">
+        <span class="ibone-drp-match"></span>{{../this.name}}
+    </div>
+    <ul class="ibone-drp-result-sub">
+        {{#each ../this.children}}
+            {{#if this.isDisplay }}
+            <li data-id="{{this.id}}" class="ibone-drp-results-dept-1 ibone-drp-result ibone-drp-result-selectable {{this.class}}">
+                <div data-id="{{this.id}}" class="ibone-drp-result-label">{{this.markup}}</div>
+            </li>
+            {{/if}}
+        {{/each}}
+        </ul>
+    </li>
+    {{/if}}
+{{else}}
+    {{#if this.isDisplay }}
+        <li data-id="{{this.id}}" class="ibone-drp-results-dept-1 ibone-drp-result ibone-drp-result-selectable {{this.class}}">
+            <div data-id="{{this.id}}" class="ibone-drp-result-label">{{this.markup}}</div>
+        </li>
+    {{/if}}
+{{/if}}
+{{/each}}
