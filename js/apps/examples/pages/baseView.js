@@ -24,6 +24,9 @@ define(['base', 'base/dataLoader', 'apps/examples/pages/examplePage'], function(
             func: urlTemplate,
             title: 'URL Template'
         }, {
+            func: loadMeta,
+            title: 'Load Meta'
+        }, {
             func: setTemplate,
             title: 'Dynamic Templates'
         }, {
@@ -727,6 +730,49 @@ define(['base', 'base/dataLoader', 'apps/examples/pages/examplePage'], function(
         $('<button class="btn">statedView.setState("red")</button>').on('click', function() {
             statedView.setState('red')
         }).appendTo(previewEl);
+    }
+
+
+    function loadMeta(previewEl, consoleEl) {
+        //starts here
+
+        dataLoader.define('country', {
+            url:'/qcn-test/public/index.php/country',
+            type:'GET',
+            contentType:'json'
+        })
+
+        var MetaView = Base.View.extend({
+            template:'<ul>{{#each data}}  <li>{{country_name}}</li> {{/each}}</ul>',
+            loadMeta: function(){
+                var _this = this;
+                var def = this.addRequest({
+                    id:'country'
+                })
+
+                def.done(function(resp){
+                    _this.model.set({data:resp})
+                })
+
+                def.fail(function(){
+                    //console.log('failed');
+                })
+
+                return def;
+            }
+        })
+
+
+        var metaView = new MetaView({
+
+        })
+
+        metaView.render();
+        //ends here
+
+        previewEl.html(metaView.el);
+
+
     }
 
 
